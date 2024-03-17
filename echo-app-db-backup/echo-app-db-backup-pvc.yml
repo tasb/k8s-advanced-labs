@@ -1,12 +1,11 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: echo-app-pv-claim
+  name: echo-app-db-backup
   namespace: echo-app-ns
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: standard
   resources:
     requests:
       storage: 3Gi
