@@ -19,12 +19,27 @@ spec:
         app: echo-app
         tier: db
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: disktype
+                operator: In
+                values:
+                - "ssd"
+                - "nvme"
       containers:
       - name: echo-db
         image: mcr.microsoft.com/mssql/server:2017-latest
         ports:
         - containerPort: 1433
         env:
+        - name: SQLCMDPASSWORD
+          valueFrom:
+          secretKeyRef:
+            name: echo-api-db-secret
+            key: dbpass
         - name: ACCEPT_EULA
           value: "Y"
         - name: SA_PASSWORD
@@ -35,6 +50,28 @@ spec:
         volumeMounts:
         - name: echo-app-db-pv-claim
           mountPath: /var/opt/mssql/data
+      livenessProbe:
+        exec:
+          command:
+          - sh
+          - -c
+          - |-
+            /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -Q 'USE [echo-log]; SELECT * FROM EchoLogs'
+        initialDelaySeconds: 60
+        periodSeconds: 60
+        failureThreshold: 3
+        timeoutSeconds: 10
+      readinessProbe:
+        exec:
+          command:
+          - sh
+          - -c
+          - |-
+            /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -Q 'USE [echo-log]; SELECT * FROM EchoLogs'
+        initialDelaySeconds: 30
+        periodSeconds: 20
+        failureThreshold: 3
+        timeoutSeconds: 5
   volumeClaimTemplates:
   - metadata:
       name: echo-app-db-pv-claim

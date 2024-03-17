@@ -13,6 +13,20 @@ spec:
             app: echo-app
             tier: backup
         spec:
+          affinity:
+            podAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - echo-app
+                  - key: tier
+                    operator: In
+                    values:
+                      - db
+                topologyKey: "kubernetes.io/hostname"
           containers:
           - name: db-backup
             image: busybox
