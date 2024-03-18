@@ -1,0 +1,29 @@
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-webapp-to-api
+  namespace: echo-app-ns
+spec:
+  podSelector:
+    matchLabels:
+      app: echo-app
+      tier: front
+  egress: 
+  - to:
+    - podSelector:
+        matchLabels:
+          app: echo-app
+          tier: back
+    ports:
+      - port: 80
+        protocol: TCP
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+    ports:
+      - port: 53
+        protocol: UDP
