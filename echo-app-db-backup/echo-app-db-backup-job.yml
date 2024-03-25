@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: echo-app-db-backup
+  name: echo-app-db-backup-job
   namespace: echo-app-ns
 spec:
   schedule: "* * * * *"

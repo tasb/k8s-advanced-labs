@@ -1,0 +1,93 @@
+## Values file for Echo App Chart
+namespace: echo-app-ns
+
+echoDb:
+  name: echo-db-sts
+  image: mcr.microsoft.com/mssql/server:2017-latest
+  dbUser: SA
+  dbPass: password
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: disktype
+            operator: In
+            values:
+            - "ssd"
+            - "nvme"
+  livenessProbe:
+    exec:
+      command:
+      - sh
+      - -c
+      - |-
+        /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -Q 'USE [echo-log]; SELECT * FROM EchoLogs'
+    initialDelaySeconds: 60
+    periodSeconds: 60
+    failureThreshold: 3
+    timeoutSeconds: 10
+  readinessProbe:
+    exec:
+      command:
+      - sh
+      - -c
+      - |-
+        /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -Q 'USE [echo-log]; SELECT * FROM EchoLogs'
+    initialDelaySeconds: 30
+    periodSeconds: 20
+    failureThreshold: 3
+    timeoutSeconds: 5
+
+echoDbBackup:
+  name: echo-app-db-backup
+  schedule: "* * * * *"
+  affinity:
+    podAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: app
+            operator: In
+            values:
+              - echo-app
+          - key: tier
+            operator: In
+            values:
+              - db
+        topologyKey: "kubernetes.io/hostname"
+
+echoApi:
+  name: echo-api
+  image: tasb/echo-api:k8s-v2
+  service:
+    port: 8080
+  readinessProbe:
+    httpGet:
+      path: /echo/ready
+      port: 80
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 5
+    failureThreshold: 1
+  livenessProbe:
+    httpGet:
+      path: /echo/live
+      port: 80
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+echoWebapp:
+  name: echo-webapp
+  image: tasb/echo-webapp:k8s-v2
+  service:
+    port: 9000
+
+ingress:
+  enabled: true
+  url: echo-app.ingress.test
+  ingressClassName: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1

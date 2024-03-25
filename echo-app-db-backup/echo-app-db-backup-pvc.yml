@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: echo-app-db-backup
+  name: echo-app-db-backup-pvc
   namespace: echo-app-ns
 spec:
   accessModes:
