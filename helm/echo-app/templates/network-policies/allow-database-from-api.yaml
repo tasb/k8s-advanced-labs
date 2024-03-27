@@ -2,7 +2,7 @@ kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
 metadata:
   name: allow-database-from-api
-  namespace: echo-app-ns
+  namespace: {{ .Release.Namespace }}
 spec:
   podSelector:
     matchLabels:
