@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.echoDb.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "echo-app.db.labels" .  | lower | nindent 6 }}
+  serviceName: "{{ .Values.echoDb.name }}-svc"
+  replicas: 1
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  template:
+    metadata:
+      labels:
+        app: echo-app
+        tier: db
+    spec:
+      {{- with .Values.echoDb.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8}}
+      {{- end }}
+      containers:
+      - name: echo-db
+        image: mcr.microsoft.com/mssql/server:2017-latest
+        ports:
+        - containerPort: 1433
+        env:
+        - name: SQLCMDPASSWORD
+          valueFrom:
+          secretKeyRef:
+            name: echo-api-db-secret
+            key: dbpass
+        - name: ACCEPT_EULA
+          value: "Y"
+        - name: SA_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: echo-api-db-secret
+              key: dbpass
+        volumeMounts:
+        - name: echo-app-db-pv-claim
+          mountPath: /var/opt/mssql/data
+      {{- with .Values.echoDb.livenessProbe }}
+      livenessProbe:
+        {{- toYaml . | nindent 8}}
+      {{- end }}
+      {{- with .Values.echoDb.readinessProbe }}
+      readinessProbe:
+        {{- toYaml . | nindent 8}}
+      {{- end }}
+  volumeClaimTemplates:
+  - metadata:
+      name: echo-app-db-pv-claim
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi

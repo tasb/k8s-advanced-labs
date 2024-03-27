@@ -1,5 +1,6 @@
 ## Values file for Echo App Chart
 namespace: echo-app-ns
+name: echo-app
 
 echoDb:
   name: echo-db-sts
@@ -60,6 +61,7 @@ echoDbBackup:
 echoApi:
   name: echo-api
   image: tasb/echo-api:k8s-v2
+  replicas: 1
   service:
     port: 8080
   readinessProbe:
@@ -82,6 +84,7 @@ echoApi:
 echoWebapp:
   name: echo-webapp
   image: tasb/echo-webapp:k8s-v2
+  replicas: 1
   service:
     port: 9000
 

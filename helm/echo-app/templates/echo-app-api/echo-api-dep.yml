@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.echoApi.name }}-dep
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.echoApi.replicas }}
+  selector:
+    matchLabels:
+      {{- include "echo-app.api.labels" .  | lower | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "echo-app.api.labels" .  | lower | nindent 6 }}
+    spec:
+      containers:
+      - name: {{ .Values.echoApi.name }}
+        image: {{ .Values.echoApi.image }}
+        ports:
+        - containerPort: 80
+        imagePullPolicy: Always
+        env:
+        - name: ConnectionStrings__DefaultConnection
+          valueFrom:
+            secretKeyRef:
+              name: echo-api-db-secret
+              key: connString
+      {{- with .Values.echoApi.readinessProbe }}
+      readinessProbe:
+        {{- toYaml . | nindent 8}}
+      {{- end }}
+      {{- with .Values.echoApi.livenessProbe }}
+      livenessProbe:
+        {{- toYaml . | nindent 8}}
+      {{- end }}

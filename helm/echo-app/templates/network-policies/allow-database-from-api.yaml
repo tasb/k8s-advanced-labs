@@ -1,0 +1,17 @@
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-database-from-api
+  namespace: echo-app-ns
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "echo-app.db.labels" . | lower | nindent 6 }}
+  ingress: 
+  - from:
+    - podSelector:
+        matchLabels:
+          {{- include "echo-app.api.labels" . | lower | nindent 8 }}
+    ports:
+      - port: 1433
+        protocol: TCP

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}-cfg
+  namespace: {{ .Values.namespace }}
+data:
+  echo-api-server: {{ .Values.echoApi.name}}-svc:{{ .Values.echoApi.service.port}}

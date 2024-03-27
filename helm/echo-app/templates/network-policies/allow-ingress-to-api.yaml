@@ -1,0 +1,20 @@
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-ingress-to-api
+  namespace: echo-app-ns
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "echo-app.api.labels" . | lower | nindent 6 }}
+  ingress: 
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: ingress-nginx
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/name: ingress-nginx
+    ports:
+      - port: 80
+        protocol: TCP

@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.echoWebapp.name }}-dep
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.echoWebapp.replicas }}
+  selector:
+    matchLabels:
+      {{- include "echo-app.webapp.labels" . | lower | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "echo-app.webapp.labels" . | lower | nindent 6 }}
+    spec:
+      containers:
+      - name: {{ .Values.echoWebapp.name }}
+        image: {{ .Values.echoWebapp.image }}
+        ports:
+        - containerPort: 80
+        imagePullPolicy: Always
+        env:
+        - name: EchoAPIServer
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Values.name }}-cfg
+              key: echo-api-server

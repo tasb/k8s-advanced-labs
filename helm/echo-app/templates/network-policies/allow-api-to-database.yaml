@@ -1,0 +1,27 @@
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-api-to-database
+  namespace: echo-app-ns
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "echo-app.api.labels" . | lower | nindent 6 }}
+  egress: 
+  - to:
+    - podSelector:
+        matchLabels:
+          {{- include "echo-app.db.labels" . | lower | nindent 8 }}
+    ports:
+      - port: 1433
+        protocol: TCP
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+    ports:
+      - port: 53
+        protocol: UDP
