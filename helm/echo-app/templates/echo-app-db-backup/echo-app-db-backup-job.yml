@@ -15,7 +15,7 @@ spec:
         spec:
           {{- with .Values.echoDbBackup.affinity }}
           affinity:
-            {{- toYaml . | nindent 8}}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
           containers:
           - name: db-backup

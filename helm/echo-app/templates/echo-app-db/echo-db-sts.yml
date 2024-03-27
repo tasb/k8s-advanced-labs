@@ -30,9 +30,9 @@ spec:
         env:
         - name: SQLCMDPASSWORD
           valueFrom:
-          secretKeyRef:
-            name: echo-api-db-secret
-            key: dbpass
+            secretKeyRef:
+              name: echo-api-db-secret
+              key: dbpass
         - name: ACCEPT_EULA
           value: "Y"
         - name: SA_PASSWORD
@@ -43,14 +43,14 @@ spec:
         volumeMounts:
         - name: echo-app-db-pv-claim
           mountPath: /var/opt/mssql/data
-      {{- with .Values.echoDb.livenessProbe }}
-      livenessProbe:
-        {{- toYaml . | nindent 8}}
-      {{- end }}
-      {{- with .Values.echoDb.readinessProbe }}
-      readinessProbe:
-        {{- toYaml . | nindent 8}}
-      {{- end }}
+        {{- with .Values.echoDb.livenessProbe }}
+        livenessProbe:
+          {{- toYaml . | nindent 10}}
+        {{- end }}
+        {{- with .Values.echoDb.readinessProbe }}
+        readinessProbe:
+          {{- toYaml . | nindent 10}}
+        {{- end }}
   volumeClaimTemplates:
   - metadata:
       name: echo-app-db-pv-claim

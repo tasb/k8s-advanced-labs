@@ -6,7 +6,7 @@ echoDb:
   name: echo-db-sts
   image: mcr.microsoft.com/mssql/server:2017-latest
   dbUser: SA
-  dbPass: password
+  dbPass: P@ssw0rd
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:

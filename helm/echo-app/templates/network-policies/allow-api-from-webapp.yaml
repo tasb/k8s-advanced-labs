@@ -11,7 +11,7 @@ spec:
   - from:
     - podSelector:
         matchLabels:
-          {{- include "echo-app.webapp.labels" . | lower | nindent 8 }}
+          {{- include "echo-app.webapp.labels" . | lower | nindent 10 }}
     ports:
       - port: 80
         protocol: TCP

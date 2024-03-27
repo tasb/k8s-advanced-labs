@@ -11,7 +11,7 @@ spec:
   - to:
     - podSelector:
         matchLabels:
-          {{- include "echo-app.db.labels" . | lower | nindent 8 }}
+          {{- include "echo-app.db.labels" . | lower | nindent 10 }}
     ports:
       - port: 1433
         protocol: TCP

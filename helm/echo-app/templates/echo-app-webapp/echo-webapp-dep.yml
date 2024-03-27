@@ -11,7 +11,7 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "echo-app.webapp.labels" . | lower | nindent 6 }}
+        {{- include "echo-app.webapp.labels" . | lower | nindent 8 }}
     spec:
       containers:
       - name: {{ .Values.echoWebapp.name }}

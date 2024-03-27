@@ -11,7 +11,7 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "echo-app.api.labels" .  | lower | nindent 6 }}
+        {{- include "echo-app.api.labels" .  | lower | nindent 8 }}
     spec:
       containers:
       - name: {{ .Values.echoApi.name }}
@@ -25,11 +25,11 @@ spec:
             secretKeyRef:
               name: echo-api-db-secret
               key: connString
-      {{- with .Values.echoApi.readinessProbe }}
-      readinessProbe:
-        {{- toYaml . | nindent 8}}
-      {{- end }}
-      {{- with .Values.echoApi.livenessProbe }}
-      livenessProbe:
-        {{- toYaml . | nindent 8}}
-      {{- end }}
+        {{- with .Values.echoApi.readinessProbe }}
+        readinessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.echoApi.livenessProbe }}
+        livenessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
